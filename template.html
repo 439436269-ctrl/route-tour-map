@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5/dist/maplibre-gl.css">
+<style>
+:root{
+  --bg:#0C1014; --land:#161C24; --line:#2A313C; --ink:#EAE4D6; --mut:#8E97A3;
+  --amber:#E8A33D; --amber-dim:#5A4A33; --red:#C2402F; --card:#12171E;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif;overflow:hidden}
+#map{position:absolute;inset:0}
+.maplibregl-canvas{outline:none}
+/* --- 标题卡 --- */
+#hd{position:absolute;top:14px;left:14px;z-index:20;max-width:340px;
+  background:rgba(13,17,22,.88);border:1px solid var(--line);border-radius:14px;
+  padding:14px 16px 12px;backdrop-filter:blur(8px)}
+#hd h1{font-size:16px;font-weight:700;letter-spacing:.5px}
+#hd h1 em{font-style:normal;color:var(--amber)}
+#hd .sub{font-size:12px;color:var(--mut);margin-top:3px}
+#hd .sub b{color:var(--ink);font-weight:600}
+#hd .legend{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px}
+#hd .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+#hd .legend .s i{background:var(--amber)}
+#hd .legend .g i{background:transparent;border:2px solid var(--amber)}
+#hd .legend .n i{background:transparent;border:2px dashed #5A6472}
+#hd a{color:var(--amber);text-decoration:none;border-bottom:1px dashed rgba(232,163,61,.4)}
+/* --- 控件 --- */
+#ctls{position:absolute;top:14px;right:14px;z-index:20;display:flex;gap:8px}
+.btn{cursor:pointer;user-select:none;background:rgba(13,17,22,.88);border:1px solid var(--line);
+  color:var(--ink);border-radius:10px;padding:8px 13px;font-size:13px;display:flex;align-items:center;gap:6px;
+  transition:border-color .15s,background .15s}
+.btn:hover{border-color:var(--amber);background:rgba(30,36,45,.92)}
+.btn.on{border-color:var(--amber);color:var(--amber)}
+/* --- 剧集卡 --- */
+#card{position:absolute;top:70px;right:14px;bottom:96px;width:min(350px,calc(100vw - 28px));z-index:25;
+  background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;
+  transform:translateX(calc(100% + 30px));transition:transform .38s cubic-bezier(.22,.9,.3,1);
+  box-shadow:0 12px 40px rgba(0,0,0,.5)}
+#card.open{transform:none}
+#card .cover{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#1A222D,#0F141B);flex:none;cursor:pointer}
+#card .cover img{width:100%;height:100%;object-fit:cover;display:block}
+#card .cover .epno{position:absolute;left:10px;top:10px;background:rgba(12,16,20,.82);border:1px solid var(--line);
+  border-radius:8px;padding:2px 9px;font-size:12px;color:var(--amber);font-weight:700;letter-spacing:1px}
+#card .bd{padding:14px 16px 16px;overflow-y:auto}
+#card .meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+#card .meta span{font-size:11.5px;color:var(--mut);background:#0D1218;border:1px solid var(--line);border-radius:6px;padding:1px 8px}
+#card h2{font-size:15.5px;line-height:1.5;font-weight:650}
+#card .loc{margin-top:8px;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:7px}
+#card .loc i{width:8px;height:8px;border-radius:50%;flex:none}
+#card .loc.x i{background:var(--amber)}
+#card .loc.g i{background:transparent;border:2px solid var(--amber)}
+#card .loc.n{color:var(--mut)} #card .loc.n i{background:transparent;border:2px dashed #5A6472}
+#card .loc small{color:var(--mut);font-weight:400}
+#card .stats{margin-top:8px;font-size:12.5px;color:var(--mut);display:flex;gap:14px}
+#card .stats b{color:var(--ink);font-weight:600}
+#card .note{margin-top:8px;font-size:12px;color:var(--mut);background:#0D1218;border-left:2px solid var(--amber-dim);padding:6px 10px;border-radius:0 8px 8px 0}
+#card .go{margin-top:14px;display:flex;gap:8px}
+#card .go a{flex:1;text-align:center;text-decoration:none;background:var(--amber);color:#141005;
+  font-weight:700;font-size:13.5px;padding:10px 0;border-radius:10px;transition:filter .15s}
+#card .go a:hover{filter:brightness(1.08)}
+#card .go a{cursor:pointer}
+#card .go a.ghost{flex:0 0 84px;background:transparent;border:1px solid var(--line);color:var(--mut);font-weight:500}
+#card .go a.ghost:hover{color:var(--ink);border-color:#3A4350}
+/* --- 底部时间轴 --- */
+#tl{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:20;
+  width:min(780px,calc(100vw - 28px));background:rgba(13,17,22,.88);border:1px solid var(--line);
+  border-radius:14px;padding:10px 18px 8px;backdrop-filter:blur(8px)}
+#tl .row{display:flex;align-items:center;gap:12px}
+#play{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#0D1218;
+  color:var(--amber);font-size:15px;cursor:pointer;transition:border-color .15s}
+#play:hover{border-color:var(--amber)}
+#track{position:relative;flex:1;height:46px;cursor:pointer}
+#track .base{position:absolute;left:0;right:0;top:22px;height:2px;background:var(--amber-dim);border-radius:1px}
+#track .fill{position:absolute;left:0;top:22px;height:2px;background:var(--amber);border-radius:1px;transition:width .4s}
+#track .yr{position:absolute;top:2px;font-size:10.5px;color:var(--mut);transform:translateX(-50%)}
+#track .dot{position:absolute;top:19px;width:8px;height:8px;border-radius:50%;background:#232B36;
+  border:1.5px solid #4A5462;transform:translateX(-50%);transition:background .2s,border-color .2s,transform .2s}
+#track .dot:hover{transform:translateX(-50%) scale(1.5)}
+#track .dot.done{background:var(--amber);border-color:var(--amber)}
+#track .dot.cur{background:var(--amber);border-color:#fff;transform:translateX(-50%) scale(1.7);box-shadow:0 0 10px rgba(232,163,61,.7)}
+#track .dot.none{border-style:dashed}
+/* --- 目录抽屉 --- */
+#list{position:absolute;top:70px;left:14px;bottom:96px;width:min(330px,calc(100vw - 28px));z-index:22;
+  background:rgba(13,17,22,.94);border:1px solid var(--line);border-radius:16px;display:none;flex-direction:column;overflow:hidden}
+#list.open{display:flex}
+#list .lh{padding:11px 15px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--mut);display:flex;justify-content:space-between;align-items:center}
+#list .lh b{color:var(--ink);font-weight:600}
+#list .items{overflow-y:auto;padding:6px}
+#list .it{display:flex;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;align-items:baseline}
+#list .it:hover{background:#1A222D}
+#list .it.cur{background:#222A36}
+#list .it .no{flex:none;width:22px;font-size:11.5px;color:var(--amber);font-weight:700}
+#list .it .tt{flex:1;font-size:12.8px;line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#list .it .dt{flex:none;font-size:10.5px;color:var(--mut)}
+#list .it .dt .g{color:#C8A05A}
+/* --- 其他 --- */
+#cred{position:absolute;right:14px;bottom:14px;z-index:15;font-size:10.5px;color:#5A6472}
+#cred a{color:#6E7885;text-decoration:none}
+#fallback{position:absolute;inset:0;display:none;place-items:center;z-index:5;color:var(--mut);font-size:14px;text-align:center;padding:20px}
+body.ready #boot{display:none}
+.hint{font-size:11px;color:var(--mut);margin-top:6px}
+@media (max-width:760px){
+  #hd{left:10px;top:10px;right:150px;max-width:none;padding:10px 12px 8px;border-radius:12px}
+  #hd h1{font-size:12.5px;line-height:1.45}
+  #hd .sub{font-size:10.5px;margin-top:2px}
+  #hd .legend,#hd .hint{display:none}
+  #ctls{top:10px;right:10px;gap:5px}
+  .btn{padding:8px 9px;font-size:14px;border-radius:8px}
+  .btn .lbl{display:none}
+  #card{left:8px;right:8px;top:auto;bottom:76px;width:auto;max-height:46vh;
+    transform:translateY(150%)}
+  #card.open{transform:none}
+  #card .cover{max-height:30vh}
+  #card .bd{padding:10px 12px 12px}
+  #card h2{font-size:14px}
+  #card .go a{padding:9px 0;font-size:13px;cursor:pointer}
+  #list{left:8px;right:8px;top:92px;bottom:76px;width:auto}
+  #tl{left:8px;right:8px;bottom:8px;width:auto;transform:none;padding:8px 12px 6px}
+  #track{height:42px}
+  #cred{display:none}
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="fallback">地图库加载失败（CDN 不可达），目录与卡片仍可使用：<br>点击右上角「目录」浏览 26 期。</div>
+
+<div id="hd">
+  <h1>{{TITLE_HTML}}</h1>
+  <div class="sub" id="hdsub">{{SUBTITLE}} · 累计播放 <b id="hdv">–</b></div>
+  <div class="legend">
+    <span class="s"><i></i>取景地已确认</span>
+    <span class="g"><i></i>据标题推测（欢迎指正）</span>
+  </div>
+  <div class="hint">← → 键切换上/下期 · 点击圆点或时间轴选集 · {{COLLECTION_HTML}}</div>
+</div>
+
+<div id="ctls">
+  <div class="btn" id="blist">☰ <span class="lbl">目录</span></div>
+  <div class="btn" id="bplay">▶ <span class="lbl">巡游</span></div>
+  <div class="btn on" id="bglobe">🌐</div>
+</div>
+
+<div id="list">
+  <div class="lh"><b>样片日记 · 26 期</b><span id="lcount"></span></div>
+  <div class="items" id="litems"></div>
+</div>
+
+<div id="card">
+  <div class="cover" id="ccover" title="点击打开本期视频"><span class="epno" id="cno">EP 01</span><img id="cimg" alt=""></div>
+  <div class="bd">
+    <div class="meta" id="cmeta"></div>
+    <h2 id="ctitle"></h2>
+    <div class="loc" id="cloc"><i></i><span id="cloct"></span><small id="clocn"></small></div>
+    <div class="stats" id="cstats"></div>
+    <div class="note" id="cnote" style="display:none"></div>
+    <div class="go">
+      <a class="ghost" id="cprev">← 上期</a>
+      <a id="clink" target="_blank" rel="noopener">{{LINK_LABEL}}</a>
+      <a class="ghost" id="cnext">下期 →</a>
+    </div>
+  </div>
+</div>
+
+<div id="tl">
+  <div class="row">
+    <button id="play" title="播放巡游">▶</button>
+    <div id="track">
+      <div class="base"></div><div class="fill" id="tfill" style="width:0"></div>
+      <div id="tdots"></div>
+    </div>
+  </div>
+</div>
+
+<div id="cred">{{CREDIT}}</div>
+
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5/dist/maplibre-gl.js"></script>
+<script>
+const CONFIG=__CONFIG_JSON__;
+const EPS=(CONFIG.episodes||[]).map((e,i)=>({
+  n:i+1,t:e.title,bv:e.bv||'',pub:Math.floor(new Date(e.date||Date.now()).getTime()/1000),
+  dur:e.durationSec||0,view:e.views||0,dan:e.danmaku||0,img:e.cover||'',
+  loc:e.location?[e.location.lon,e.location.lat]:null,
+  pl:e.location?(e.location.name||null):null,
+  c:e.location?(e.certainty===undefined?1:e.certainty):-1,
+  nt:e.note||null,link:e.link||null
+}));
+// ---------- 基础 ----------
+const $=id=>document.getElementById(id);
+const fmtDate=p=>{const d=new Date((p+8*3600)*1000);return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0')};
+const fmtDur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const fmtWan=v=>v>=1e8?(v/1e8).toFixed(2)+' 亿':(v/1e4).toFixed(1)+' 万';
+const PINNED=EPS.filter(e=>e.loc);
+EPS.forEach(e=>{const i=new Image();i.src='img/e'+String(e.n).padStart(2,'0')+'.jpg';});   // 预载封面，巡游切换不掉图
+const hasGL=typeof maplibregl!=='undefined';
+$('hdv').textContent=fmtWan(EPS.reduce((s,e)=>s+e.view,0));
+
+// ---------- 大圆插值：长段变弧线 ----------
+function arc(a,b){
+  const R=Math.PI/180,D=180/Math.PI;
+  const p1=a[1]*R,l1=a[0]*R,p2=b[1]*R,l2=b[0]*R;
+  const x1=Math.cos(p1)*Math.cos(l1),y1=Math.cos(p1)*Math.sin(l1),z1=Math.sin(p1);
+  const x2=Math.cos(p2)*Math.cos(l2),y2=Math.cos(p2)*Math.sin(l2),z2=Math.sin(p2);
+  const d=Math.acos(Math.max(-1,Math.min(1,x1*x2+y1*y2+z1*z2)));
+  const n=Math.max(2,Math.ceil((d*D)/2.5)),pts=[];
+  for(let i=1;i<=n;i++){const t=i/n,A=Math.sin((1-t)*d)/Math.sin(d),B=Math.sin(t*d)/Math.sin(d);
+    const px=A*x1+B*x2,py=A*y1+B*y2,pz=A*z1+B*z2;
+    pts.push([Math.atan2(py,px)*D,Math.atan2(pz,Math.hypot(px,py))*D]);}
+  return pts;
+}
+const routeCoords=[],pinAt=[];
+PINNED.forEach((e,i)=>{
+  if(i)routeCoords.push(...arc(PINNED[i-1].loc,e.loc));else routeCoords.push(e.loc);
+  pinAt[i]=routeCoords.length-1;
+});
+
+// ---------- 状态 ----------
+let cur=-1,map=null,globe=true,playing=false,timer=null,spinning=false;
+
+// ---------- 目录 ----------
+$('litems').innerHTML=EPS.map(e=>{
+  const dt=fmtDate(e.pub);
+  const tag=e.c===-1?'<span class="g">待定</span>':e.c===0?'<span class="g">推测</span>':'';
+  return `<div class="it" data-n="${e.n}"><span class="no">${String(e.n).padStart(2,'0')}</span><span class="tt">${e.t}</span><span class="dt">${dt}<br>${tag||'&nbsp;'}</span></div>`;
+}).join('');
+$('litems').addEventListener('click',e=>{const it=e.target.closest('.it');if(it)select(+it.dataset.n)});
+
+// ---------- 时间轴 ----------
+const dotsWrap=$('tdots');
+EPS.forEach((e,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(e.c===-1?' none':'');d.style.left=(i/(EPS.length-1)*100)+'%';
+  d.title=`EP${e.n} · ${fmtDate(e.pub)}`;d.dataset.n=e.n;dotsWrap.appendChild(d);
+});
+let lastYear=0;
+EPS.forEach((e,i)=>{const y=new Date((e.pub+8*3600)*1000).getUTCFullYear();
+  if(y!==lastYear){lastYear=y;const s=document.createElement('div');s.className='yr';s.textContent=y;
+    s.style.left=(i/(EPS.length-1)*100)+'%';dotsWrap.appendChild(s);}});
+$('track').addEventListener('click',e=>{
+  const r=$('track').getBoundingClientRect();
+  const i=Math.max(0,Math.min(EPS.length-1,Math.round((e.clientX-r.left)/r.width*(EPS.length-1))));
+  select(EPS[i].n);e.stopPropagation();
+});
+
+// ---------- 地图 ----------
+if(hasGL){
+  map=new maplibregl.Map({container:'map',center:[70,32],zoom:1.55,attributionControl:false,
+    style:{version:8,projection:{type:'globe'},
+      glyphs:'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+      sources:{
+        ofm:{type:'vector',url:'https://tiles.openfreemap.org/planet'},
+        rtes:{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:routeCoords}}},
+        done:{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:[]}}},
+        pins:{type:'geojson',data:{type:'FeatureCollection',features:PINNED.map(e=>({id:e.n,properties:{n:e.n,c:e.c,pl:e.pl},geometry:{type:'Point',coordinates:e.loc}}))}}
+      },
+      layers:[
+        {id:'bg',type:'background',paint:{'background-color':'#0C1014'}},
+        {id:'water',type:'fill',source:'ofm','source-layer':'water',paint:{'fill-color':'#101822'}},
+        {id:'bnd',type:'line',source:'ofm','source-layer':'boundary',paint:{'line-color':'#222A35','line-width':.8}},
+        {id:'route-all',type:'line',source:'rtes',layout:{'line-cap':'round'},paint:{'line-color':'#4A3F2C','line-width':1.5,'line-dasharray':[2,2.5]}},
+        {id:'route-done',type:'line',source:'done',layout:{'line-cap':'round'},paint:{'line-color':'#E8A33D','line-width':2.4}},
+        {id:'pin-halo',type:'circle',source:'pins',paint:{
+          'circle-radius':['case',['==',['get','c'],1],9,8],
+          'circle-color':'rgba(232,163,61,.15)',
+          'circle-stroke-color':['case',['==',['get','c'],1],'#E8A33D','rgba(232,163,61,.6)'],
+          'circle-stroke-width':1.5}},
+        {id:'pin-dot',type:'circle',source:'pins',paint:{
+          'circle-radius':['case',['==',['get','c'],1],4.8,4],
+          'circle-color':['case',['==',['get','c'],1],'#E8A33D','#0C1014']}},
+        {id:'pin-no',type:'symbol',source:'pins',
+          layout:{'text-field':['get','n'],'text-font':['Noto Sans Regular'],'text-size':10,'text-offset':[0,-1.5],'text-anchor':'bottom'},
+          paint:{'text-color':'#EAE4D6','text-halo-color':'rgba(12,16,20,.9)','text-halo-width':1.4}},
+        {id:'pin-active',type:'symbol',source:'pins',filter:['==',['get','n'],-1],
+          layout:{'text-field':['get','pl'],'text-font':['Noto Sans Bold'],'text-size':13.5,'text-anchor':'left','text-offset':[1,0],'text-allow-overlap':true},
+          paint:{'text-color':'#E8A33D','text-halo-color':'rgba(12,16,20,.95)','text-halo-width':1.8}},
+        {id:'plabels',type:'symbol',source:'ofm','source-layer':'place',
+          filter:['in',['get','class'],['literal',['country','city']]],maxzoom:8,
+          layout:{'text-field':['get','name'],'text-font':['Noto Sans Regular'],'text-size':['interpolate',['linear'],['zoom'],1,7,6,12]},
+          paint:{'text-color':'#6E7885','text-halo-color':'rgba(12,16,20,.85)','text-halo-width':1.2}}
+      ]}});
+  map.on('load',()=>{markReady();startSpin();});
+  map.on('click','pin-dot',e=>select(e.features[0].properties.n));
+  map.on('mouseenter','pin-dot',()=>map.getCanvas().style.cursor='pointer');
+  map.on('mouseleave','pin-dot',()=>map.getCanvas().style.cursor='');
+  map.on('mousedown',()=>{spinning=false});
+}else{
+  $('fallback').style.display='grid';markReady();
+}
+let __ready=false;
+function markReady(){if(__ready)return;__ready=true;document.body.classList.add('ready')}
+setTimeout(markReady,3000);
+
+function startSpin(){if(!map||spinning||cur>=0)return;spinning=true;
+  (function step(){if(!spinning||!map||cur>=0)return;
+    const c=map.getCenter();c.lng+=0.06;if(c.lng>180)c.lng-=360;map.setCenter(c);
+    requestAnimationFrame(step);})();
+}
+
+// ---------- 选集 ----------
+function select(n,opts){
+  opts=opts||{};
+  const i=EPS.findIndex(e=>e.n===n);if(i<0)return;
+  const wasFirst=cur<0;cur=i;const e=EPS[i];
+  spinning=false;
+  // 卡片
+  $('cno').textContent='EP '+String(e.n).padStart(2,'0');
+  const img=$('cimg');img.style.display='';img.src='img/e'+String(e.n).padStart(2,'0')+'.jpg';img.onerror=()=>img.style.display='none';
+  $('cmeta').innerHTML=`<span>${fmtDate(e.pub)} 发布</span><span>时长 ${fmtDur(e.dur)}</span><span>${e.n} / 26</span>`;
+  $('ctitle').textContent=e.t;
+  const loc=$('cloc');loc.className='loc '+(e.c===1?'x':e.c===0?'g':'n');
+  $('cloct').textContent=e.c===-1?'位置待定':e.pl;$('clocn').textContent=e.c===0?'（推测）':'';
+  $('cstats').innerHTML=`<span>▶ <b>${fmtWan(e.view)}</b> 播放</span><span>💬 <b>${fmtWan(e.dan)}</b> 弹幕</span>`;
+  if(e.nt){$('cnote').style.display='';$('cnote').textContent=e.nt}else $('cnote').style.display='none';
+  $('clink').href=e.link||'#';$('clink').style.display=e.link?'':'none';
+  $('cprev').style.opacity=e.n>1?1:.3;$('cnext').style.opacity=e.n<26?1:.3;
+  $('card').classList.add('open');
+  // 目录高亮
+  document.querySelectorAll('#list .it').forEach(el=>el.classList.toggle('cur',+el.dataset.n===e.n));
+  const cit=document.querySelector(`#list .it[data-n="${e.n}"]`);
+  if(cit&&cit.scrollIntoView)cit.scrollIntoView({block:'nearest'});
+  $('lcount').textContent='当前 EP '+e.n;
+  // 时间轴
+  document.querySelectorAll('#tdots .dot').forEach(d=>{
+    const dn=+d.dataset.n;d.classList.toggle('cur',dn===e.n);d.classList.toggle('done',dn<e.n&&dn!==e.n);
+  });
+  $('tfill').style.width=(i/(EPS.length-1)*100)+'%';
+  // 地图
+  if(map&&e.loc){
+    const pi=PINNED.indexOf(e);
+    if(pi>=0&&pinAt[pi]!==undefined){
+      const src=map.getSource('done');
+      if(src)src.setData({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:routeCoords.slice(0,pinAt[pi]+1)}});
+    }
+    const lbl=map.getLayer('pin-active');
+    if(lbl)map.setFilter('pin-active',['==',['get','n'],e.n]);
+    if(!opts.silentFly){
+      const z=opts.play?5.2:Math.max(map.getZoom(),3.6);
+      const pad=window.innerWidth>760?{right:380,top:60,bottom:110}:{top:150,bottom:300};
+      map.flyTo({center:e.loc,zoom:z,duration:opts.play?4000:(wasFirst?3400:2800),padding:pad});
+    }
+  }
+  history.replaceState(null,'','#ep='+e.n);
+}
+$('cprev').onclick=()=>{if(cur>0)select(EPS[cur-1].n)};
+$('cnext').onclick=()=>{if(cur<EPS.length-1)select(EPS[cur+1].n)};
+$('ccover').onclick=()=>{if(cur>=0&&EPS[cur].link)window.open(EPS[cur].link,'_blank')};
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'&&cur>0)select(EPS[cur-1].n);
+  if(e.key==='ArrowRight'&&cur<EPS.length-1)select(EPS[cur+1].n);
+});
+
+// ---------- 巡游 ----------
+function setPlay(on){
+  playing=on;clearInterval(timer);
+  $('bplay').innerHTML=on?'⏸ <span class="lbl">巡游</span>':'▶ <span class="lbl">巡游</span>';$('bplay').classList.toggle('on',on);
+  $('play').textContent=on?'⏸':'▶';
+  if(on){
+    if(cur<0||cur>=EPS.length-1)select(EPS[0].n,{play:true});
+    else select(EPS[cur].n,{play:true});
+    timer=setInterval(()=>{if(cur>=EPS.length-1){setPlay(false);return}select(EPS[cur+1].n,{play:true})},5400);
+  }
+}
+$('bplay').onclick=()=>setPlay(!playing);
+$('play').onclick=()=>setPlay(!playing);
+
+// ---------- 其他控件 ----------
+$('blist').onclick=()=>{
+  const l=$('list'),open=l.classList.toggle('open');
+  if(open&&window.innerWidth>760){l.style.top=Math.round($('hd').getBoundingClientRect().bottom+10)+'px'}
+};
+window.addEventListener('resize',()=>{const l=$('list');
+  if(l.classList.contains('open')&&window.innerWidth>760){l.style.top=Math.round($('hd').getBoundingClientRect().bottom+10)+'px'}});
+$('bglobe').onclick=()=>{globe=!globe;$('bglobe').classList.toggle('on',globe);
+  if(map&&map.setProjection)map.setProjection({type:globe?'globe':'mercator'});};
+
+// ---------- 深链 ----------
+const m=location.hash.match(/ep=(\d+)/);
+if(m){const e=EPS.find(x=>x.n===+m[1]);if(e)select(e.n);}
+
+</script>
+</body>
+</html>
