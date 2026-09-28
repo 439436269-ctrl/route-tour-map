@@ -1,0 +1,41 @@
+{
+  "name": "@vfvrpq/route-tour-map",
+  "version": "1.0.1",
+  "description": "Generate a cinematic dark route-map web page from episode/trip data: globe projection, great-circle arcs, timeline auto-tour, click-to-open detail cards. Zero build, single HTML output.",
+  "main": "index.js",
+  "bin": {
+    "route-tour-map": "cli.js"
+  },
+  "files": [
+    "index.js",
+    "generate.js",
+    "cli.js",
+    "template.html",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:demo": "node build-demo.js"
+  },
+  "keywords": [
+    "map",
+    "maplibre",
+    "route",
+    "globe",
+    "timeline",
+    "video",
+    "bilibili",
+    "visualization",
+    "html-generator"
+  ],
+  "author": "vfvrpq",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/439436269-ctrl/route-tour-map.git"
+  },
+  "homepage": "https://github.com/439436269-ctrl/route-tour-map#readme"
+}
