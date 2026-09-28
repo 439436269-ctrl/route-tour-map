@@ -1,0 +1,5 @@
+node_modules/
+*.tgz
+route-tour-map.html
+.pw/
+.shots/
