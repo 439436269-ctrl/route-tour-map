@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>影视飓风《样片日记》拍摄路线图</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5/dist/maplibre-gl.css">
+<style>
+:root{
+  --bg:#0C1014; --land:#161C24; --line:#2A313C; --ink:#EAE4D6; --mut:#8E97A3;
+  --amber:#E8A33D; --amber-dim:#5A4A33; --red:#C2402F; --card:#12171E;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif;overflow:hidden}
+#map{position:absolute;inset:0}
+.maplibregl-canvas{outline:none}
+/* --- 标题卡 --- */
+#hd{position:absolute;top:14px;left:14px;z-index:20;max-width:340px;
+  background:rgba(13,17,22,.88);border:1px solid var(--line);border-radius:14px;
+  padding:14px 16px 12px;backdrop-filter:blur(8px)}
+#hd h1{font-size:16px;font-weight:700;letter-spacing:.5px}
+#hd h1 em{font-style:normal;color:var(--amber)}
+#hd .sub{font-size:12px;color:var(--mut);margin-top:3px}
+#hd .sub b{color:var(--ink);font-weight:600}
+#hd .legend{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px}
+#hd .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+#hd .legend .s i{background:var(--amber)}
+#hd .legend .g i{background:transparent;border:2px solid var(--amber)}
+#hd .legend .n i{background:transparent;border:2px dashed #5A6472}
+#hd a{color:var(--amber);text-decoration:none;border-bottom:1px dashed rgba(232,163,61,.4)}
+/* --- 控件 --- */
+#ctls{position:absolute;top:14px;right:14px;z-index:20;display:flex;gap:8px}
+.btn{cursor:pointer;user-select:none;background:rgba(13,17,22,.88);border:1px solid var(--line);
+  color:var(--ink);border-radius:10px;padding:8px 13px;font-size:13px;display:flex;align-items:center;gap:6px;
+  transition:border-color .15s,background .15s}
+.btn:hover{border-color:var(--amber);background:rgba(30,36,45,.92)}
+.btn.on{border-color:var(--amber);color:var(--amber)}
+/* --- 剧集卡 --- */
+#card{position:absolute;top:70px;right:14px;bottom:96px;width:min(350px,calc(100vw - 28px));z-index:25;
+  background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;
+  transform:translateX(calc(100% + 30px));transition:transform .38s cubic-bezier(.22,.9,.3,1);
+  box-shadow:0 12px 40px rgba(0,0,0,.5)}
+#card.open{transform:none}
+#card .cover{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#1A222D,#0F141B);flex:none;cursor:pointer}
+#card .cover img{width:100%;height:100%;object-fit:cover;display:block}
+#card .cover .epno{position:absolute;left:10px;top:10px;background:rgba(12,16,20,.82);border:1px solid var(--line);
+  border-radius:8px;padding:2px 9px;font-size:12px;color:var(--amber);font-weight:700;letter-spacing:1px}
+#card .bd{padding:14px 16px 16px;overflow-y:auto}
+#card .meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+#card .meta span{font-size:11.5px;color:var(--mut);background:#0D1218;border:1px solid var(--line);border-radius:6px;padding:1px 8px}
+#card h2{font-size:15.5px;line-height:1.5;font-weight:650}
+#card .loc{margin-top:8px;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:7px}
+#card .loc i{width:8px;height:8px;border-radius:50%;flex:none}
+#card .loc.x i{background:var(--amber)}
+#card .loc.g i{background:transparent;border:2px solid var(--amber)}
+#card .loc.n{color:var(--mut)} #card .loc.n i{background:transparent;border:2px dashed #5A6472}
+#card .loc small{color:var(--mut);font-weight:400}
+#card .stats{margin-top:8px;font-size:12.5px;color:var(--mut);display:flex;gap:14px}
+#card .stats b{color:var(--ink);font-weight:600}
+#card .note{margin-top:8px;font-size:12px;color:var(--mut);background:#0D1218;border-left:2px solid var(--amber-dim);padding:6px 10px;border-radius:0 8px 8px 0}
+#card .go{margin-top:14px;display:flex;gap:8px}
+#card .go a{flex:1;text-align:center;text-decoration:none;background:var(--amber);color:#141005;
+  font-weight:700;font-size:13.5px;padding:10px 0;border-radius:10px;transition:filter .15s}
+#card .go a:hover{filter:brightness(1.08)}
+#card .go a{cursor:pointer}
+#card .go a.ghost{flex:0 0 84px;background:transparent;border:1px solid var(--line);color:var(--mut);font-weight:500}
+#card .go a.ghost:hover{color:var(--ink);border-color:#3A4350}
+/* --- 底部时间轴 --- */
+#tl{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:20;
+  width:min(780px,calc(100vw - 28px));background:rgba(13,17,22,.88);border:1px solid var(--line);
+  border-radius:14px;padding:10px 18px 8px;backdrop-filter:blur(8px)}
+#tl .row{display:flex;align-items:center;gap:12px}
+#play{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#0D1218;
+  color:var(--amber);font-size:15px;cursor:pointer;transition:border-color .15s}
+#play:hover{border-color:var(--amber)}
+#track{position:relative;flex:1;height:46px;cursor:pointer}
+#track .base{position:absolute;left:0;right:0;top:22px;height:2px;background:var(--amber-dim);border-radius:1px}
+#track .fill{position:absolute;left:0;top:22px;height:2px;background:var(--amber);border-radius:1px;transition:width .4s}
+#track .yr{position:absolute;top:2px;font-size:10.5px;color:var(--mut);transform:translateX(-50%)}
+#track .dot{position:absolute;top:19px;width:8px;height:8px;border-radius:50%;background:#232B36;
+  border:1.5px solid #4A5462;transform:translateX(-50%);transition:background .2s,border-color .2s,transform .2s}
+#track .dot:hover{transform:translateX(-50%) scale(1.5)}
+#track .dot.done{background:var(--amber);border-color:var(--amber)}
+#track .dot.cur{background:var(--amber);border-color:#fff;transform:translateX(-50%) scale(1.7);box-shadow:0 0 10px rgba(232,163,61,.7)}
+#track .dot.none{border-style:dashed}
+/* --- 目录抽屉 --- */
+#list{position:absolute;top:70px;left:14px;bottom:96px;width:min(330px,calc(100vw - 28px));z-index:22;
+  background:rgba(13,17,22,.94);border:1px solid var(--line);border-radius:16px;display:none;flex-direction:column;overflow:hidden}
+#list.open{display:flex}
+#list .lh{padding:11px 15px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--mut);display:flex;justify-content:space-between;align-items:center}
+#list .lh b{color:var(--ink);font-weight:600}
+#list .items{overflow-y:auto;padding:6px}
+#list .it{display:flex;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;align-items:baseline}
+#list .it:hover{background:#1A222D}
+#list .it.cur{background:#222A36}
+#list .it .no{flex:none;width:22px;font-size:11.5px;color:var(--amber);font-weight:700}
+#list .it .tt{flex:1;font-size:12.8px;line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#list .it .dt{flex:none;font-size:10.5px;color:var(--mut)}
+#list .it .dt .g{color:#C8A05A}
+/* --- 其他 --- */
+#cred{position:absolute;right:14px;bottom:14px;z-index:15;font-size:10.5px;color:#5A6472}
+#cred a{color:#6E7885;text-decoration:none}
+#fallback{position:absolute;inset:0;display:none;place-items:center;z-index:5;color:var(--mut);font-size:14px;text-align:center;padding:20px}
+body.ready #boot{display:none}
+.hint{font-size:11px;color:var(--mut);margin-top:6px}
+@media (max-width:760px){
+  #hd{left:10px;top:10px;right:150px;max-width:none;padding:10px 12px 8px;border-radius:12px}
+  #hd h1{font-size:12.5px;line-height:1.45}
+  #hd .sub{font-size:10.5px;margin-top:2px}
+  #hd .legend,#hd .hint{display:none}
+  #ctls{top:10px;right:10px;gap:5px}
+  .btn{padding:8px 9px;font-size:14px;border-radius:8px}
+  .btn .lbl{display:none}
+  #card{left:8px;right:8px;top:auto;bottom:76px;width:auto;max-height:46vh;
+    transform:translateY(150%)}
+  #card.open{transform:none}
+  #card .cover{max-height:30vh}
+  #card .bd{padding:10px 12px 12px}
+  #card h2{font-size:14px}
+  #card .go a{padding:9px 0;font-size:13px;cursor:pointer}
+  #list{left:8px;right:8px;top:92px;bottom:76px;width:auto}
+  #tl{left:8px;right:8px;bottom:8px;width:auto;transform:none;padding:8px 12px 6px}
+  #track{height:42px}
+  #cred{display:none}
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="fallback">地图库加载失败（CDN 不可达），目录与卡片仍可使用：<br>点击右上角「目录」浏览 26 期。</div>
+
+<div id="hd">
+  <h1>影视飓风 <em>《样片日记》</em>拍摄路线图</h1>
+  <div class="sub" id="hdsub">B 站合集 · 共 26 期 · 累计播放 <b id="hdv">–</b></div>
+  <div class="legend">
+    <span class="s"><i></i>取景地已确认</span>
+    <span class="g"><i></i>据标题推测（欢迎指正）</span>
+  </div>
+  <div class="hint">← → 键切换上/下期 · 点击圆点或时间轴选集 · <a href="https://space.bilibili.com/946974/lists/2046621?type=season" target="_blank" rel="noopener">前往合集 ↗</a></div>
+</div>
+
+<div id="ctls">
+  <div class="btn" id="blist">☰ <span class="lbl">目录</span></div>
+  <div class="btn" id="bplay">▶ <span class="lbl">巡游</span></div>
+  <div class="btn on" id="bglobe">🌐</div>
+</div>
+
+<div id="list">
+  <div class="lh"><b>样片日记 · 26 期</b><span id="lcount"></span></div>
+  <div class="items" id="litems"></div>
+</div>
+
+<div id="card">
+  <div class="cover" id="ccover" title="点击打开本期视频"><span class="epno" id="cno">EP 01</span><img id="cimg" alt=""></div>
+  <div class="bd">
+    <div class="meta" id="cmeta"></div>
+    <h2 id="ctitle"></h2>
+    <div class="loc" id="cloc"><i></i><span id="cloct"></span><small id="clocn"></small></div>
+    <div class="stats" id="cstats"></div>
+    <div class="note" id="cnote" style="display:none"></div>
+    <div class="go">
+      <a class="ghost" id="cprev">← 上期</a>
+      <a id="clink" target="_blank" rel="noopener">在 B 站观看 ▶</a>
+      <a class="ghost" id="cnext">下期 →</a>
+    </div>
+  </div>
+</div>
+
+<div id="tl">
+  <div class="row">
+    <button id="play" title="播放巡游">▶</button>
+    <div id="track">
+      <div class="base"></div><div class="fill" id="tfill" style="width:0"></div>
+      <div id="tdots"></div>
+    </div>
+  </div>
+</div>
+
+<div id="cred"><a href="https://openfreemap.org" target="_blank" rel="noopener">© OpenFreeMap</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OSM</a> · 视频数据 © bilibili</div>
+
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5/dist/maplibre-gl.js"></script>
+<script>
+const CONFIG={"title":"影视飓风《样片日记》拍摄路线图","titleHtml":"影视飓风 \u003cem>《样片日记》\u003c/em>拍摄路线图","subtitle":"B 站合集 · 共 26 期","collectionUrl":"https://space.bilibili.com/946974/lists/2046621?type=season","linkLabel":"在 B 站观看 ▶","credit":"\u003ca href=\"https://openfreemap.org\" target=\"_blank\" rel=\"noopener\">© OpenFreeMap\u003c/a> · \u003ca href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">© OSM\u003c/a> · 视频数据 © bilibili","episodes":[{"title":"零下26度的新疆，跟着影视飓风去拍样片！","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e01.jpg","link":"https://www.bilibili.com/video/BV1be41127ft","date":"2024-01-10T09:00:00.000Z","durationSec":974,"views":3235727,"danmaku":15163,"location":{"name":"新疆 · 阿勒泰","lon":88.14,"lat":47.84,"certainty":0},"note":"坐标为推测：标题仅给出「新疆」，取冬季拍摄的阿勒泰一带。"},{"title":"凌晨五点威海的第一缕阳光，是什么样子的？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e02.jpg","link":"https://www.bilibili.com/video/BV132421A7VN","date":"2024-02-07T09:14:53.000Z","durationSec":1059,"views":2250072,"danmaku":10812,"location":{"name":"山东 · 威海","lon":122.2,"lat":37.53,"certainty":1}},{"title":"24小时体验四季？穿越香格里拉，这是我们拍到的样片","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e03.jpg","link":"https://www.bilibili.com/video/BV1fx421172L","date":"2024-02-28T09:30:00.000Z","durationSec":1002,"views":2475025,"danmaku":14556,"location":{"name":"云南 · 香格里拉","lon":99.7,"lat":27.83,"certainty":1}},{"title":"把调色师送去2600公里之外拍样片，能行吗？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e04.jpg","link":"https://www.bilibili.com/video/BV18f421o7zr","date":"2024-04-03T02:00:00.000Z","durationSec":794,"views":2433262,"danmaku":10121,"location":{"name":"云南 · 大理＋香格里拉","lon":100.19,"lat":25.69,"certainty":1},"note":"本期为大理、香格里拉双取景地，图钉取大理。"},{"title":"去巴厘岛拍样片，机还是炸了。","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e05.jpg","link":"https://www.bilibili.com/video/BV1w442197FF","date":"2024-06-05T09:00:00.000Z","durationSec":1006,"views":1805680,"danmaku":6378,"location":{"name":"印尼 · 巴厘岛","lon":115.19,"lat":-8.42,"certainty":1}},{"title":"去中国的无人区拍样片会遇到什么？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e06.jpg","link":"https://www.bilibili.com/video/BV1Ey411i7WG","date":"2024-07-03T09:00:00.000Z","durationSec":720,"views":1906690,"danmaku":5943,"location":{"name":"无人区","lon":90,"lat":38.5,"certainty":0},"note":"坐标为推测：取阿尔金山—柴达木无人区一线。"},{"title":"【杜比视界】从阿勒泰到魔鬼城，俯瞰不一样的新疆！","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e07.jpg","link":"https://www.bilibili.com/video/BV1ZM4m1y7aD","date":"2024-07-26T09:00:00.000Z","durationSec":912,"views":6623810,"danmaku":11166,"location":{"name":"新疆 · 乌尔禾魔鬼城","lon":85.69,"lat":46.09,"certainty":1},"note":"标题路线为阿勒泰→魔鬼城，图钉取克拉玛依乌尔禾魔鬼城。"},{"title":"【杜比视界】从地心飞到云海？冒险拍下夏天的贵州！","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e08.jpg","link":"https://www.bilibili.com/video/BV1GZ421L7Le","date":"2024-08-22T10:00:00.000Z","durationSec":1044,"views":4985430,"danmaku":20186,"location":{"name":"贵州","lon":106.7,"lat":26.5,"certainty":0},"note":"坐标为推测：取黔中喀斯特（洞穴—云海题材）一带。"},{"title":"【杜比视界】1年只有10天！金秋的大兴安岭有多出片？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e09.jpg","link":"https://www.bilibili.com/video/BV1eTmNY8Eb7","date":"2024-10-16T09:35:44.000Z","durationSec":904,"views":3153448,"danmaku":24130,"location":{"name":"大兴安岭 · 根河一带","lon":121.52,"lat":50.78,"certainty":1}},{"title":"【杜比全景声】 海拔4000米的川西，藏着多少高人？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e10.jpg","link":"https://www.bilibili.com/video/BV1V36NYGEs2","date":"2024-12-02T09:00:00.000Z","durationSec":1092,"views":4197123,"danmaku":12883,"location":{"name":"四川 · 川西（康定—新都桥）","lon":101.96,"lat":30.05,"certainty":1}},{"title":"影视飓风史上第一次，拍到了极光！","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e11.jpg","link":"https://www.bilibili.com/video/BV13prSYiEhr","date":"2025-01-07T09:05:52.000Z","durationSec":1036,"views":2425286,"danmaku":37648,"location":{"name":"黑龙江 · 漠河","lon":122.36,"lat":53.47,"certainty":0},"note":"坐标为推测：2025 年 1 月国内极光观测热点为漠河北极村。"},{"title":"【双杜比】在东京拍样片，被当成明星了……？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e12.jpg","link":"https://www.bilibili.com/video/BV1omoHYzEST","date":"2025-04-15T11:30:00.000Z","durationSec":1239,"views":3167685,"danmaku":21323,"location":{"name":"日本 · 东京","lon":139.75,"lat":35.66,"certainty":1}},{"title":"【杜比视界】海拔2000米，藏东的桃花季有多出片？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e13.jpg","link":"https://www.bilibili.com/video/BV1ac5yzhE94","date":"2025-04-22T03:00:00.000Z","durationSec":1331,"views":2609525,"danmaku":21814,"location":{"name":"西藏 · 藏东桃花","lon":95.76,"lat":29.86,"certainty":0},"note":"坐标为推测：桃花季取景常在林芝波密一线。"},{"title":"首次尝试19.5:9画幅，用新疆样片填满你的手机！","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e14.jpg","link":"https://www.bilibili.com/video/BV1ZmLBzZEEj","date":"2025-04-27T12:15:49.000Z","durationSec":880,"views":3936083,"danmaku":8293,"location":{"name":"新疆 · 伊犁","lon":81.32,"lat":43.92,"certainty":0},"note":"坐标为推测：标题仅给出「新疆」。"},{"title":"【杜比视界】在万岛之国，第一次去水下拍免费样片？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e15.jpg","link":"https://www.bilibili.com/video/BV1k9EyzfEU9","date":"2025-05-15T09:32:51.000Z","durationSec":975,"views":2986888,"danmaku":9260,"location":{"name":"挪威 · 罗弗敦","lon":13.6,"lat":68.15,"certainty":0},"note":"坐标为推测：「万岛之国」取挪威北部群岛。"},{"title":"影视飓风原创音乐？在甘肃能拍到什么样片？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e16.jpg","link":"https://www.bilibili.com/video/BV1ccNQzGEZ5","date":"2025-06-22T03:00:00.000Z","durationSec":1082,"views":1866649,"danmaku":9798,"location":{"name":"甘肃 · 敦煌","lon":94.66,"lat":40.14,"certainty":0},"note":"坐标为推测：标题仅给出「甘肃」。"},{"title":"追着风暴拍样片，能拍到什么？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e17.jpg","link":"https://www.bilibili.com/video/BV1yUnFzGEwP","date":"2025-09-22T09:06:09.000Z","durationSec":851,"views":3825557,"danmaku":7295,"location":{"name":"美国 · 俄克拉荷马（龙卷走廊）","lon":-97.5,"lat":35.6,"certainty":0},"note":"坐标为推测：追风暴题材取美国 Tornado Alley。"},{"title":"零下20度的长白山长什么样？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e18.jpg","link":"https://www.bilibili.com/video/BV1wK2QBPEDv","date":"2025-12-09T09:14:00.000Z","durationSec":808,"views":3307681,"danmaku":32493,"location":{"name":"吉林 · 长白山","lon":128.06,"lat":42.02,"certainty":1}},{"title":"去北极圈能拍到什么？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e19.jpg","link":"https://www.bilibili.com/video/BV195BDBbEtd","date":"2025-12-25T09:00:00.000Z","durationSec":1404,"views":5506980,"danmaku":22136,"location":{"name":"挪威 · 特罗姆瑟（北极圈内）","lon":18.96,"lat":69.65,"certainty":0},"note":"坐标为推测：北极圈取景取特罗姆瑟一带。"},{"title":"在新西兰能拍到什么？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e20.jpg","link":"https://www.bilibili.com/video/BV154kLBuEAr","date":"2026-01-20T09:00:00.000Z","durationSec":845,"views":3347605,"danmaku":10026,"location":{"name":"新西兰 · 南岛","lon":168.66,"lat":-45.03,"certainty":1}},{"title":"【杜比视界】我们在这里...拍到了没见过的素材","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e21.jpg","link":"https://www.bilibili.com/video/BV1tizKB8EmF","date":"2026-01-23T09:00:00.000Z","durationSec":1473,"views":5754509,"danmaku":16700,"location":{"name":"美国 · 加利福尼亚","lon":-119.6,"lat":36.7,"certainty":1},"note":"取景地：加利福尼亚，坐标取加州中部。"},{"title":"第一次去非洲拍样片日记…","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e22.jpg","link":"https://www.bilibili.com/video/BV1EZGy6xEoM","date":"2026-05-27T09:00:00.000Z","durationSec":1013,"views":3400403,"danmaku":27777,"location":{"name":"非洲 · 肯尼亚","lon":35.14,"lat":-1.5,"certainty":0},"note":"坐标为推测：野生动物题材取马赛马拉一带。"},{"title":"“超微距”下的瑞士长什么样？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e23.jpg","link":"https://www.bilibili.com/video/BV1vkVB6NEuR","date":"2026-06-03T09:00:00.000Z","durationSec":1369,"views":5464449,"danmaku":11785,"location":{"name":"瑞士 · 阿尔卑斯","lon":7.91,"lat":46.59,"certainty":1}},{"title":"在巴西能拍到什么？","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e24.jpg","link":"https://www.bilibili.com/video/BV1AwTu6EEpB","date":"2026-06-28T09:02:01.000Z","durationSec":1262,"views":4122167,"danmaku":12669,"location":{"name":"巴西 · 里约热内卢","lon":-43.16,"lat":-22.95,"certainty":0},"note":"国家明确；城市坐标为推测。"},{"title":"探访草原深处，我们拍到了……","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e25.jpg","link":"https://www.bilibili.com/video/BV13PKV6zEUB","date":"2026-07-16T09:10:00.000Z","durationSec":712,"views":2383975,"danmaku":5646,"location":{"name":"呼伦贝尔草原","lon":119.7,"lat":49.2,"certainty":0},"note":"坐标为推测：草原题材取呼伦贝尔一带。"},{"title":"我们拍到了水下风暴","cover":"https://439436269-ctrl.github.io/sample-diary-map/img/e26.jpg","link":"https://www.bilibili.com/video/BV1c7GA6kEqN","date":"2026-07-31T09:01:27.000Z","durationSec":1488,"views":10026524,"danmaku":34483,"location":{"name":"南非 · 开普敦海域","lon":18.42,"lat":-33.92,"certainty":1},"note":"取景地：南非，坐标取开普敦近海。"}]};
+const EPS=(CONFIG.episodes||[]).map((e,i)=>({
+  n:i+1,t:e.title,bv:e.bv||'',pub:Math.floor(new Date(e.date||Date.now()).getTime()/1000),
+  dur:e.durationSec||0,view:e.views||0,dan:e.danmaku||0,img:e.cover||'',
+  loc:e.location?[e.location.lon,e.location.lat]:null,
+  pl:e.location?(e.location.name||null):null,
+  c:e.location?(e.certainty===undefined?1:e.certainty):-1,
+  nt:e.note||null,link:e.link||null
+}));
+// ---------- 基础 ----------
+const $=id=>document.getElementById(id);
+const fmtDate=p=>{const d=new Date((p+8*3600)*1000);return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0')};
+const fmtDur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const fmtWan=v=>v>=1e8?(v/1e8).toFixed(2)+' 亿':(v/1e4).toFixed(1)+' 万';
+const PINNED=EPS.filter(e=>e.loc);
+EPS.forEach(e=>{const i=new Image();i.src='img/e'+String(e.n).padStart(2,'0')+'.jpg';});   // 预载封面，巡游切换不掉图
+const hasGL=typeof maplibregl!=='undefined';
+$('hdv').textContent=fmtWan(EPS.reduce((s,e)=>s+e.view,0));
+
+// ---------- 大圆插值：长段变弧线 ----------
+function arc(a,b){
+  const R=Math.PI/180,D=180/Math.PI;
+  const p1=a[1]*R,l1=a[0]*R,p2=b[1]*R,l2=b[0]*R;
+  const x1=Math.cos(p1)*Math.cos(l1),y1=Math.cos(p1)*Math.sin(l1),z1=Math.sin(p1);
+  const x2=Math.cos(p2)*Math.cos(l2),y2=Math.cos(p2)*Math.sin(l2),z2=Math.sin(p2);
+  const d=Math.acos(Math.max(-1,Math.min(1,x1*x2+y1*y2+z1*z2)));
+  const n=Math.max(2,Math.ceil((d*D)/2.5)),pts=[];
+  for(let i=1;i<=n;i++){const t=i/n,A=Math.sin((1-t)*d)/Math.sin(d),B=Math.sin(t*d)/Math.sin(d);
+    const px=A*x1+B*x2,py=A*y1+B*y2,pz=A*z1+B*z2;
+    pts.push([Math.atan2(py,px)*D,Math.atan2(pz,Math.hypot(px,py))*D]);}
+  return pts;
+}
+const routeCoords=[],pinAt=[];
+PINNED.forEach((e,i)=>{
+  if(i)routeCoords.push(...arc(PINNED[i-1].loc,e.loc));else routeCoords.push(e.loc);
+  pinAt[i]=routeCoords.length-1;
+});
+
+// ---------- 状态 ----------
+let cur=-1,map=null,globe=true,playing=false,timer=null,spinning=false;
+
+// ---------- 目录 ----------
+$('litems').innerHTML=EPS.map(e=>{
+  const dt=fmtDate(e.pub);
+  const tag=e.c===-1?'<span class="g">待定</span>':e.c===0?'<span class="g">推测</span>':'';
+  return `<div class="it" data-n="${e.n}"><span class="no">${String(e.n).padStart(2,'0')}</span><span class="tt">${e.t}</span><span class="dt">${dt}<br>${tag||'&nbsp;'}</span></div>`;
+}).join('');
+$('litems').addEventListener('click',e=>{const it=e.target.closest('.it');if(it)select(+it.dataset.n)});
+
+// ---------- 时间轴 ----------
+const dotsWrap=$('tdots');
+EPS.forEach((e,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(e.c===-1?' none':'');d.style.left=(i/(EPS.length-1)*100)+'%';
+  d.title=`EP${e.n} · ${fmtDate(e.pub)}`;d.dataset.n=e.n;dotsWrap.appendChild(d);
+});
+let lastYear=0;
+EPS.forEach((e,i)=>{const y=new Date((e.pub+8*3600)*1000).getUTCFullYear();
+  if(y!==lastYear){lastYear=y;const s=document.createElement('div');s.className='yr';s.textContent=y;
+    s.style.left=(i/(EPS.length-1)*100)+'%';dotsWrap.appendChild(s);}});
+$('track').addEventListener('click',e=>{
+  const r=$('track').getBoundingClientRect();
+  const i=Math.max(0,Math.min(EPS.length-1,Math.round((e.clientX-r.left)/r.width*(EPS.length-1))));
+  select(EPS[i].n);e.stopPropagation();
+});
+
+// ---------- 地图 ----------
+if(hasGL){
+  map=new maplibregl.Map({container:'map',center:[70,32],zoom:1.55,attributionControl:false,
+    style:{version:8,projection:{type:'globe'},
+      glyphs:'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+      sources:{
+        ofm:{type:'vector',url:'https://tiles.openfreemap.org/planet'},
+        rtes:{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:routeCoords}}},
+        done:{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:[]}}},
+        pins:{type:'geojson',data:{type:'FeatureCollection',features:PINNED.map(e=>({id:e.n,properties:{n:e.n,c:e.c,pl:e.pl},geometry:{type:'Point',coordinates:e.loc}}))}}
+      },
+      layers:[
+        {id:'bg',type:'background',paint:{'background-color':'#0C1014'}},
+        {id:'water',type:'fill',source:'ofm','source-layer':'water',paint:{'fill-color':'#101822'}},
+        {id:'bnd',type:'line',source:'ofm','source-layer':'boundary',paint:{'line-color':'#222A35','line-width':.8}},
+        {id:'route-all',type:'line',source:'rtes',layout:{'line-cap':'round'},paint:{'line-color':'#4A3F2C','line-width':1.5,'line-dasharray':[2,2.5]}},
+        {id:'route-done',type:'line',source:'done',layout:{'line-cap':'round'},paint:{'line-color':'#E8A33D','line-width':2.4}},
+        {id:'pin-halo',type:'circle',source:'pins',paint:{
+          'circle-radius':['case',['==',['get','c'],1],9,8],
+          'circle-color':'rgba(232,163,61,.15)',
+          'circle-stroke-color':['case',['==',['get','c'],1],'#E8A33D','rgba(232,163,61,.6)'],
+          'circle-stroke-width':1.5}},
+        {id:'pin-dot',type:'circle',source:'pins',paint:{
+          'circle-radius':['case',['==',['get','c'],1],4.8,4],
+          'circle-color':['case',['==',['get','c'],1],'#E8A33D','#0C1014']}},
+        {id:'pin-no',type:'symbol',source:'pins',
+          layout:{'text-field':['get','n'],'text-font':['Noto Sans Regular'],'text-size':10,'text-offset':[0,-1.5],'text-anchor':'bottom'},
+          paint:{'text-color':'#EAE4D6','text-halo-color':'rgba(12,16,20,.9)','text-halo-width':1.4}},
+        {id:'pin-active',type:'symbol',source:'pins',filter:['==',['get','n'],-1],
+          layout:{'text-field':['get','pl'],'text-font':['Noto Sans Bold'],'text-size':13.5,'text-anchor':'left','text-offset':[1,0],'text-allow-overlap':true},
+          paint:{'text-color':'#E8A33D','text-halo-color':'rgba(12,16,20,.95)','text-halo-width':1.8}},
+        {id:'plabels',type:'symbol',source:'ofm','source-layer':'place',
+          filter:['in',['get','class'],['literal',['country','city']]],maxzoom:8,
+          layout:{'text-field':['get','name'],'text-font':['Noto Sans Regular'],'text-size':['interpolate',['linear'],['zoom'],1,7,6,12]},
+          paint:{'text-color':'#6E7885','text-halo-color':'rgba(12,16,20,.85)','text-halo-width':1.2}}
+      ]}});
+  map.on('load',()=>{markReady();startSpin();});
+  map.on('click','pin-dot',e=>select(e.features[0].properties.n));
+  map.on('mouseenter','pin-dot',()=>map.getCanvas().style.cursor='pointer');
+  map.on('mouseleave','pin-dot',()=>map.getCanvas().style.cursor='');
+  map.on('mousedown',()=>{spinning=false});
+}else{
+  $('fallback').style.display='grid';markReady();
+}
+let __ready=false;
+function markReady(){if(__ready)return;__ready=true;document.body.classList.add('ready')}
+setTimeout(markReady,3000);
+
+function startSpin(){if(!map||spinning||cur>=0)return;spinning=true;
+  (function step(){if(!spinning||!map||cur>=0)return;
+    const c=map.getCenter();c.lng+=0.06;if(c.lng>180)c.lng-=360;map.setCenter(c);
+    requestAnimationFrame(step);})();
+}
+
+// ---------- 选集 ----------
+function select(n,opts){
+  opts=opts||{};
+  const i=EPS.findIndex(e=>e.n===n);if(i<0)return;
+  const wasFirst=cur<0;cur=i;const e=EPS[i];
+  spinning=false;
+  // 卡片
+  $('cno').textContent='EP '+String(e.n).padStart(2,'0');
+  const img=$('cimg');img.style.display='';img.src='img/e'+String(e.n).padStart(2,'0')+'.jpg';img.onerror=()=>img.style.display='none';
+  $('cmeta').innerHTML=`<span>${fmtDate(e.pub)} 发布</span><span>时长 ${fmtDur(e.dur)}</span><span>${e.n} / 26</span>`;
+  $('ctitle').textContent=e.t;
+  const loc=$('cloc');loc.className='loc '+(e.c===1?'x':e.c===0?'g':'n');
+  $('cloct').textContent=e.c===-1?'位置待定':e.pl;$('clocn').textContent=e.c===0?'（推测）':'';
+  $('cstats').innerHTML=`<span>▶ <b>${fmtWan(e.view)}</b> 播放</span><span>💬 <b>${fmtWan(e.dan)}</b> 弹幕</span>`;
+  if(e.nt){$('cnote').style.display='';$('cnote').textContent=e.nt}else $('cnote').style.display='none';
+  $('clink').href=e.link||'#';$('clink').style.display=e.link?'':'none';
+  $('cprev').style.opacity=e.n>1?1:.3;$('cnext').style.opacity=e.n<26?1:.3;
+  $('card').classList.add('open');
+  // 目录高亮
+  document.querySelectorAll('#list .it').forEach(el=>el.classList.toggle('cur',+el.dataset.n===e.n));
+  const cit=document.querySelector(`#list .it[data-n="${e.n}"]`);
+  if(cit&&cit.scrollIntoView)cit.scrollIntoView({block:'nearest'});
+  $('lcount').textContent='当前 EP '+e.n;
+  // 时间轴
+  document.querySelectorAll('#tdots .dot').forEach(d=>{
+    const dn=+d.dataset.n;d.classList.toggle('cur',dn===e.n);d.classList.toggle('done',dn<e.n&&dn!==e.n);
+  });
+  $('tfill').style.width=(i/(EPS.length-1)*100)+'%';
+  // 地图
+  if(map&&e.loc){
+    const pi=PINNED.indexOf(e);
+    if(pi>=0&&pinAt[pi]!==undefined){
+      const src=map.getSource('done');
+      if(src)src.setData({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:routeCoords.slice(0,pinAt[pi]+1)}});
+    }
+    const lbl=map.getLayer('pin-active');
+    if(lbl)map.setFilter('pin-active',['==',['get','n'],e.n]);
+    if(!opts.silentFly){
+      const z=opts.play?5.2:Math.max(map.getZoom(),3.6);
+      const pad=window.innerWidth>760?{right:380,top:60,bottom:110}:{top:150,bottom:300};
+      map.flyTo({center:e.loc,zoom:z,duration:opts.play?4000:(wasFirst?3400:2800),padding:pad});
+    }
+  }
+  history.replaceState(null,'','#ep='+e.n);
+}
+$('cprev').onclick=()=>{if(cur>0)select(EPS[cur-1].n)};
+$('cnext').onclick=()=>{if(cur<EPS.length-1)select(EPS[cur+1].n)};
+$('ccover').onclick=()=>{if(cur>=0&&EPS[cur].link)window.open(EPS[cur].link,'_blank')};
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'&&cur>0)select(EPS[cur-1].n);
+  if(e.key==='ArrowRight'&&cur<EPS.length-1)select(EPS[cur+1].n);
+});
+
+// ---------- 巡游 ----------
+function setPlay(on){
+  playing=on;clearInterval(timer);
+  $('bplay').innerHTML=on?'⏸ <span class="lbl">巡游</span>':'▶ <span class="lbl">巡游</span>';$('bplay').classList.toggle('on',on);
+  $('play').textContent=on?'⏸':'▶';
+  if(on){
+    if(cur<0||cur>=EPS.length-1)select(EPS[0].n,{play:true});
+    else select(EPS[cur].n,{play:true});
+    timer=setInterval(()=>{if(cur>=EPS.length-1){setPlay(false);return}select(EPS[cur+1].n,{play:true})},5400);
+  }
+}
+$('bplay').onclick=()=>setPlay(!playing);
+$('play').onclick=()=>setPlay(!playing);
+
+// ---------- 其他控件 ----------
+$('blist').onclick=()=>{
+  const l=$('list'),open=l.classList.toggle('open');
+  if(open&&window.innerWidth>760){l.style.top=Math.round($('hd').getBoundingClientRect().bottom+10)+'px'}
+};
+window.addEventListener('resize',()=>{const l=$('list');
+  if(l.classList.contains('open')&&window.innerWidth>760){l.style.top=Math.round($('hd').getBoundingClientRect().bottom+10)+'px'}});
+$('bglobe').onclick=()=>{globe=!globe;$('bglobe').classList.toggle('on',globe);
+  if(map&&map.setProjection)map.setProjection({type:globe?'globe':'mercator'});};
+
+// ---------- 深链 ----------
+const m=location.hash.match(/ep=(\d+)/);
+if(m){const e=EPS.find(x=>x.n===+m[1]);if(e)select(e.n);}
+
+</script>
+</body>
+</html>
