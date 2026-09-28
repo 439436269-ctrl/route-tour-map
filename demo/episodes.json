@@ -1,0 +1,417 @@
+{
+ "title": "影视飓风《样片日记》拍摄路线图",
+ "titleHtml": "影视飓风 <em>《样片日记》</em>拍摄路线图",
+ "subtitle": "B 站合集 · 共 26 期",
+ "collectionUrl": "https://space.bilibili.com/946974/lists/2046621?type=season",
+ "linkLabel": "在 B 站观看 ▶",
+ "credit": "<a href=\"https://openfreemap.org\" target=\"_blank\" rel=\"noopener\">© OpenFreeMap</a> · <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">© OSM</a> · 视频数据 © bilibili",
+ "episodes": [
+  {
+   "title": "零下26度的新疆，跟着影视飓风去拍样片！",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e01.jpg",
+   "link": "https://www.bilibili.com/video/BV1be41127ft",
+   "date": "2024-01-10T09:00:00.000Z",
+   "durationSec": 974,
+   "views": 3235727,
+   "danmaku": 15163,
+   "location": {
+    "name": "新疆 · 阿勒泰",
+    "lon": 88.14,
+    "lat": 47.84,
+    "certainty": 0
+   },
+   "note": "坐标为推测：标题仅给出「新疆」，取冬季拍摄的阿勒泰一带。"
+  },
+  {
+   "title": "凌晨五点威海的第一缕阳光，是什么样子的？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e02.jpg",
+   "link": "https://www.bilibili.com/video/BV132421A7VN",
+   "date": "2024-02-07T09:14:53.000Z",
+   "durationSec": 1059,
+   "views": 2250072,
+   "danmaku": 10812,
+   "location": {
+    "name": "山东 · 威海",
+    "lon": 122.2,
+    "lat": 37.53,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "24小时体验四季？穿越香格里拉，这是我们拍到的样片",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e03.jpg",
+   "link": "https://www.bilibili.com/video/BV1fx421172L",
+   "date": "2024-02-28T09:30:00.000Z",
+   "durationSec": 1002,
+   "views": 2475025,
+   "danmaku": 14556,
+   "location": {
+    "name": "云南 · 香格里拉",
+    "lon": 99.7,
+    "lat": 27.83,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "把调色师送去2600公里之外拍样片，能行吗？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e04.jpg",
+   "link": "https://www.bilibili.com/video/BV18f421o7zr",
+   "date": "2024-04-03T02:00:00.000Z",
+   "durationSec": 794,
+   "views": 2433262,
+   "danmaku": 10121,
+   "location": {
+    "name": "云南 · 大理＋香格里拉",
+    "lon": 100.19,
+    "lat": 25.69,
+    "certainty": 1
+   },
+   "note": "本期为大理、香格里拉双取景地，图钉取大理。"
+  },
+  {
+   "title": "去巴厘岛拍样片，机还是炸了。",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e05.jpg",
+   "link": "https://www.bilibili.com/video/BV1w442197FF",
+   "date": "2024-06-05T09:00:00.000Z",
+   "durationSec": 1006,
+   "views": 1805680,
+   "danmaku": 6378,
+   "location": {
+    "name": "印尼 · 巴厘岛",
+    "lon": 115.19,
+    "lat": -8.42,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "去中国的无人区拍样片会遇到什么？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e06.jpg",
+   "link": "https://www.bilibili.com/video/BV1Ey411i7WG",
+   "date": "2024-07-03T09:00:00.000Z",
+   "durationSec": 720,
+   "views": 1906690,
+   "danmaku": 5943,
+   "location": {
+    "name": "无人区",
+    "lon": 90,
+    "lat": 38.5,
+    "certainty": 0
+   },
+   "note": "坐标为推测：取阿尔金山—柴达木无人区一线。"
+  },
+  {
+   "title": "【杜比视界】从阿勒泰到魔鬼城，俯瞰不一样的新疆！",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e07.jpg",
+   "link": "https://www.bilibili.com/video/BV1ZM4m1y7aD",
+   "date": "2024-07-26T09:00:00.000Z",
+   "durationSec": 912,
+   "views": 6623810,
+   "danmaku": 11166,
+   "location": {
+    "name": "新疆 · 乌尔禾魔鬼城",
+    "lon": 85.69,
+    "lat": 46.09,
+    "certainty": 1
+   },
+   "note": "标题路线为阿勒泰→魔鬼城，图钉取克拉玛依乌尔禾魔鬼城。"
+  },
+  {
+   "title": "【杜比视界】从地心飞到云海？冒险拍下夏天的贵州！",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e08.jpg",
+   "link": "https://www.bilibili.com/video/BV1GZ421L7Le",
+   "date": "2024-08-22T10:00:00.000Z",
+   "durationSec": 1044,
+   "views": 4985430,
+   "danmaku": 20186,
+   "location": {
+    "name": "贵州",
+    "lon": 106.7,
+    "lat": 26.5,
+    "certainty": 0
+   },
+   "note": "坐标为推测：取黔中喀斯特（洞穴—云海题材）一带。"
+  },
+  {
+   "title": "【杜比视界】1年只有10天！金秋的大兴安岭有多出片？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e09.jpg",
+   "link": "https://www.bilibili.com/video/BV1eTmNY8Eb7",
+   "date": "2024-10-16T09:35:44.000Z",
+   "durationSec": 904,
+   "views": 3153448,
+   "danmaku": 24130,
+   "location": {
+    "name": "大兴安岭 · 根河一带",
+    "lon": 121.52,
+    "lat": 50.78,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "【杜比全景声】 海拔4000米的川西，藏着多少高人？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e10.jpg",
+   "link": "https://www.bilibili.com/video/BV1V36NYGEs2",
+   "date": "2024-12-02T09:00:00.000Z",
+   "durationSec": 1092,
+   "views": 4197123,
+   "danmaku": 12883,
+   "location": {
+    "name": "四川 · 川西（康定—新都桥）",
+    "lon": 101.96,
+    "lat": 30.05,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "影视飓风史上第一次，拍到了极光！",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e11.jpg",
+   "link": "https://www.bilibili.com/video/BV13prSYiEhr",
+   "date": "2025-01-07T09:05:52.000Z",
+   "durationSec": 1036,
+   "views": 2425286,
+   "danmaku": 37648,
+   "location": {
+    "name": "黑龙江 · 漠河",
+    "lon": 122.36,
+    "lat": 53.47,
+    "certainty": 0
+   },
+   "note": "坐标为推测：2025 年 1 月国内极光观测热点为漠河北极村。"
+  },
+  {
+   "title": "【双杜比】在东京拍样片，被当成明星了……？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e12.jpg",
+   "link": "https://www.bilibili.com/video/BV1omoHYzEST",
+   "date": "2025-04-15T11:30:00.000Z",
+   "durationSec": 1239,
+   "views": 3167685,
+   "danmaku": 21323,
+   "location": {
+    "name": "日本 · 东京",
+    "lon": 139.75,
+    "lat": 35.66,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "【杜比视界】海拔2000米，藏东的桃花季有多出片？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e13.jpg",
+   "link": "https://www.bilibili.com/video/BV1ac5yzhE94",
+   "date": "2025-04-22T03:00:00.000Z",
+   "durationSec": 1331,
+   "views": 2609525,
+   "danmaku": 21814,
+   "location": {
+    "name": "西藏 · 藏东桃花",
+    "lon": 95.76,
+    "lat": 29.86,
+    "certainty": 0
+   },
+   "note": "坐标为推测：桃花季取景常在林芝波密一线。"
+  },
+  {
+   "title": "首次尝试19.5:9画幅，用新疆样片填满你的手机！",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e14.jpg",
+   "link": "https://www.bilibili.com/video/BV1ZmLBzZEEj",
+   "date": "2025-04-27T12:15:49.000Z",
+   "durationSec": 880,
+   "views": 3936083,
+   "danmaku": 8293,
+   "location": {
+    "name": "新疆 · 伊犁",
+    "lon": 81.32,
+    "lat": 43.92,
+    "certainty": 0
+   },
+   "note": "坐标为推测：标题仅给出「新疆」。"
+  },
+  {
+   "title": "【杜比视界】在万岛之国，第一次去水下拍免费样片？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e15.jpg",
+   "link": "https://www.bilibili.com/video/BV1k9EyzfEU9",
+   "date": "2025-05-15T09:32:51.000Z",
+   "durationSec": 975,
+   "views": 2986888,
+   "danmaku": 9260,
+   "location": {
+    "name": "挪威 · 罗弗敦",
+    "lon": 13.6,
+    "lat": 68.15,
+    "certainty": 0
+   },
+   "note": "坐标为推测：「万岛之国」取挪威北部群岛。"
+  },
+  {
+   "title": "影视飓风原创音乐？在甘肃能拍到什么样片？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e16.jpg",
+   "link": "https://www.bilibili.com/video/BV1ccNQzGEZ5",
+   "date": "2025-06-22T03:00:00.000Z",
+   "durationSec": 1082,
+   "views": 1866649,
+   "danmaku": 9798,
+   "location": {
+    "name": "甘肃 · 敦煌",
+    "lon": 94.66,
+    "lat": 40.14,
+    "certainty": 0
+   },
+   "note": "坐标为推测：标题仅给出「甘肃」。"
+  },
+  {
+   "title": "追着风暴拍样片，能拍到什么？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e17.jpg",
+   "link": "https://www.bilibili.com/video/BV1yUnFzGEwP",
+   "date": "2025-09-22T09:06:09.000Z",
+   "durationSec": 851,
+   "views": 3825557,
+   "danmaku": 7295,
+   "location": {
+    "name": "美国 · 俄克拉荷马（龙卷走廊）",
+    "lon": -97.5,
+    "lat": 35.6,
+    "certainty": 0
+   },
+   "note": "坐标为推测：追风暴题材取美国 Tornado Alley。"
+  },
+  {
+   "title": "零下20度的长白山长什么样？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e18.jpg",
+   "link": "https://www.bilibili.com/video/BV1wK2QBPEDv",
+   "date": "2025-12-09T09:14:00.000Z",
+   "durationSec": 808,
+   "views": 3307681,
+   "danmaku": 32493,
+   "location": {
+    "name": "吉林 · 长白山",
+    "lon": 128.06,
+    "lat": 42.02,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "去北极圈能拍到什么？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e19.jpg",
+   "link": "https://www.bilibili.com/video/BV195BDBbEtd",
+   "date": "2025-12-25T09:00:00.000Z",
+   "durationSec": 1404,
+   "views": 5506980,
+   "danmaku": 22136,
+   "location": {
+    "name": "挪威 · 特罗姆瑟（北极圈内）",
+    "lon": 18.96,
+    "lat": 69.65,
+    "certainty": 0
+   },
+   "note": "坐标为推测：北极圈取景取特罗姆瑟一带。"
+  },
+  {
+   "title": "在新西兰能拍到什么？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e20.jpg",
+   "link": "https://www.bilibili.com/video/BV154kLBuEAr",
+   "date": "2026-01-20T09:00:00.000Z",
+   "durationSec": 845,
+   "views": 3347605,
+   "danmaku": 10026,
+   "location": {
+    "name": "新西兰 · 南岛",
+    "lon": 168.66,
+    "lat": -45.03,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "【杜比视界】我们在这里...拍到了没见过的素材",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e21.jpg",
+   "link": "https://www.bilibili.com/video/BV1tizKB8EmF",
+   "date": "2026-01-23T09:00:00.000Z",
+   "durationSec": 1473,
+   "views": 5754509,
+   "danmaku": 16700,
+   "location": {
+    "name": "美国 · 加利福尼亚",
+    "lon": -119.6,
+    "lat": 36.7,
+    "certainty": 1
+   },
+   "note": "取景地：加利福尼亚，坐标取加州中部。"
+  },
+  {
+   "title": "第一次去非洲拍样片日记…",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e22.jpg",
+   "link": "https://www.bilibili.com/video/BV1EZGy6xEoM",
+   "date": "2026-05-27T09:00:00.000Z",
+   "durationSec": 1013,
+   "views": 3400403,
+   "danmaku": 27777,
+   "location": {
+    "name": "非洲 · 肯尼亚",
+    "lon": 35.14,
+    "lat": -1.5,
+    "certainty": 0
+   },
+   "note": "坐标为推测：野生动物题材取马赛马拉一带。"
+  },
+  {
+   "title": "“超微距”下的瑞士长什么样？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e23.jpg",
+   "link": "https://www.bilibili.com/video/BV1vkVB6NEuR",
+   "date": "2026-06-03T09:00:00.000Z",
+   "durationSec": 1369,
+   "views": 5464449,
+   "danmaku": 11785,
+   "location": {
+    "name": "瑞士 · 阿尔卑斯",
+    "lon": 7.91,
+    "lat": 46.59,
+    "certainty": 1
+   }
+  },
+  {
+   "title": "在巴西能拍到什么？",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e24.jpg",
+   "link": "https://www.bilibili.com/video/BV1AwTu6EEpB",
+   "date": "2026-06-28T09:02:01.000Z",
+   "durationSec": 1262,
+   "views": 4122167,
+   "danmaku": 12669,
+   "location": {
+    "name": "巴西 · 里约热内卢",
+    "lon": -43.16,
+    "lat": -22.95,
+    "certainty": 0
+   },
+   "note": "国家明确；城市坐标为推测。"
+  },
+  {
+   "title": "探访草原深处，我们拍到了……",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e25.jpg",
+   "link": "https://www.bilibili.com/video/BV13PKV6zEUB",
+   "date": "2026-07-16T09:10:00.000Z",
+   "durationSec": 712,
+   "views": 2383975,
+   "danmaku": 5646,
+   "location": {
+    "name": "呼伦贝尔草原",
+    "lon": 119.7,
+    "lat": 49.2,
+    "certainty": 0
+   },
+   "note": "坐标为推测：草原题材取呼伦贝尔一带。"
+  },
+  {
+   "title": "我们拍到了水下风暴",
+   "cover": "https://439436269-ctrl.github.io/sample-diary-map/img/e26.jpg",
+   "link": "https://www.bilibili.com/video/BV1c7GA6kEqN",
+   "date": "2026-07-31T09:01:27.000Z",
+   "durationSec": 1488,
+   "views": 10026524,
+   "danmaku": 34483,
+   "location": {
+    "name": "南非 · 开普敦海域",
+    "lon": 18.42,
+    "lat": -33.92,
+    "certainty": 1
+   },
+   "note": "取景地：南非，坐标取开普敦近海。"
+  }
+ ]
+}
